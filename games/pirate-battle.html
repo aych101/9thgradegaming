@@ -22,23 +22,27 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 10px;
+            padding: 0;
             overflow: hidden;
         }
 
         .container {
-            width: 100%;
-            max-width: 800px;
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            display: flex;
+            flex-direction: column;
         }
 
         .header {
             text-align: center;
             color: white;
-            margin-bottom: 10px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.5);
         }
 
         .header h1 {
-            font-size: 1.8em;
+            font-size: 1.4em;
             margin-bottom: 5px;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
@@ -48,98 +52,83 @@
             justify-content: space-around;
             color: #ffd700;
             font-weight: bold;
-            margin-bottom: 10px;
-            font-size: 0.95em;
+            font-size: 0.9em;
         }
 
         #gameCanvas {
             display: block;
-            border: 3px solid #ffd700;
+            flex: 1;
+            width: 100%;
             background: linear-gradient(180deg, #1a5a8a 0%, #0d3d5c 100%);
-            width: 100%;
-            height: auto;
-            max-width: 800px;
-            aspect-ratio: 4 / 3;
-            margin: 0 auto;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+            border: none;
+            position: relative;
         }
 
-        .controls {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 15px;
+        .joystick-container {
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            width: 120px;
+            height: 120px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .direction-pad {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 5px;
-            grid-column: 1;
+        .joystick-base {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            background: rgba(100, 150, 200, 0.2);
+            border: 2px solid rgba(200, 220, 255, 0.4);
+            border-radius: 50%;
+            z-index: 100;
         }
 
-        .direction-btn {
-            background: #2c5aa0;
-            color: white;
-            border: 2px solid #ffd700;
-            border-radius: 8px;
-            padding: 15px;
-            font-size: 1.2em;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.1s;
-            active: scale(0.95);
+        .joystick-knob {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: radial-gradient(circle, #00ff00, #00aa00);
+            border: 2px solid #00ff00;
+            border-radius: 50%;
+            z-index: 101;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.6);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
 
-        .direction-btn:active {
-            transform: scale(0.95);
-            background: #1a3a52;
-        }
-
-        .direction-btn:disabled {
-            opacity: 0.5;
-        }
-
-        .fire-btn {
-            grid-column: 2;
-            grid-row: 1 / 4;
-            background: #ff4444;
-            color: white;
+        .fire-button {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, #ff6666, #cc0000);
             border: 3px solid #ffaa00;
-            border-radius: 12px;
-            font-size: 1.4em;
+            border-radius: 50%;
+            z-index: 100;
+            font-size: 2em;
             font-weight: bold;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
             cursor: pointer;
             transition: all 0.1s;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
 
-        .fire-btn:active {
+        .fire-button:active {
             transform: scale(0.95);
-            background: #dd0000;
-        }
-
-        .info {
-            color: white;
-            text-align: center;
-            margin-top: 10px;
-            font-size: 0.9em;
-        }
-
-        .back-btn {
-            background: #444;
-            color: white;
-            border: 2px solid #666;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            margin-top: 10px;
-            width: 100%;
-            font-weight: bold;
-            transition: all 0.3s;
-        }
-
-        .back-btn:active {
-            background: #222;
+            background: radial-gradient(circle, #ff4444, #aa0000);
+            box-shadow: 0 0 30px rgba(255, 0, 0, 1);
         }
 
         .game-over {
@@ -147,55 +136,43 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.9);
+            background: rgba(0, 0, 0, 0.95);
             color: white;
-            padding: 30px;
+            padding: 40px;
             border-radius: 12px;
             text-align: center;
-            z-index: 1000;
+            z-index: 2000;
             display: none;
-            min-width: 250px;
+            min-width: 280px;
+            border: 3px solid #ffd700;
         }
 
         .game-over h2 {
-            font-size: 2em;
-            margin-bottom: 10px;
+            font-size: 2.5em;
+            margin-bottom: 15px;
             color: #ffd700;
         }
 
         .game-over p {
-            font-size: 1.2em;
-            margin-bottom: 20px;
+            font-size: 1.3em;
+            margin-bottom: 10px;
         }
 
         .game-over button {
             background: #ff4444;
             color: white;
             border: none;
-            padding: 12px 25px;
+            padding: 15px 30px;
             border-radius: 8px;
-            font-size: 1.1em;
+            font-size: 1.2em;
             cursor: pointer;
             font-weight: bold;
+            margin-top: 20px;
+            transition: all 0.3s;
         }
 
-        @media (max-width: 600px) {
-            .header h1 {
-                font-size: 1.4em;
-            }
-
-            .stats {
-                font-size: 0.85em;
-            }
-
-            .direction-btn {
-                padding: 12px;
-                font-size: 1em;
-            }
-
-            .fire-btn {
-                font-size: 1.2em;
-            }
+        .game-over button:active {
+            transform: scale(0.95);
         }
     </style>
 </head>
@@ -212,24 +189,11 @@
 
         <canvas id="gameCanvas"></canvas>
 
-        <div class="controls">
-            <div class="direction-pad">
-                <div></div>
-                <button class="direction-btn" id="upBtn">⬆️</button>
-                <div></div>
-                
-                <button class="direction-btn" id="leftBtn">⬅️</button>
-                <button class="direction-btn" id="downBtn">⬇️</button>
-                <button class="direction-btn" id="rightBtn">➡️</button>
-            </div>
-            <button class="fire-btn" id="fireBtn">🔫<br>FIRE</button>
+        <div class="joystick-base" id="joystickBase">
+            <div class="joystick-knob" id="joystickKnob"></div>
         </div>
 
-        <div class="info">
-            <p>Destroy enemy ships! Don't let them escape!</p>
-        </div>
-
-        <button class="back-btn" onclick="window.location.href='index.html'">🏠 Back to Hub</button>
+        <button class="fire-button" id="fireButton">🔫</button>
     </div>
 
     <div class="game-over" id="gameOver">
@@ -242,12 +206,14 @@
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
+        const joystickBase = document.getElementById('joystickBase');
+        const joystickKnob = document.getElementById('joystickKnob');
+        const fireButton = document.getElementById('fireButton');
 
         // Set canvas size
         function resizeCanvas() {
-            const rect = canvas.getBoundingClientRect();
-            canvas.width = Math.min(800, window.innerWidth - 20);
-            canvas.height = canvas.width * 0.75;
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight - 60;
         }
         resizeCanvas();
         window.addEventListener('resize', resizeCanvas);
@@ -255,7 +221,7 @@
         // Game variables
         let playerShip = {
             x: canvas.width / 2,
-            y: canvas.height - 50,
+            y: canvas.height - 80,
             width: 30,
             height: 40,
             vx: 0,
@@ -272,41 +238,86 @@
         let fireRate = 0;
         let spawnRate = 0;
 
-        const keys = {};
+        // Joystick variables
+        let joystickActive = false;
+        let joystickX = 0;
+        let joystickY = 0;
+        const joystickRadius = 60;
+        const joystickBaseRadius = 50;
 
-        // Touch controls
-        document.getElementById('upBtn').addEventListener('mousedown', () => { keys['up'] = true; });
-        document.getElementById('upBtn').addEventListener('mouseup', () => { keys['up'] = false; });
-        document.getElementById('upBtn').addEventListener('touchstart', (e) => { e.preventDefault(); keys['up'] = true; });
-        document.getElementById('upBtn').addEventListener('touchend', (e) => { e.preventDefault(); keys['up'] = false; });
+        // Fire button state
+        let fireActive = false;
 
-        document.getElementById('downBtn').addEventListener('mousedown', () => { keys['down'] = true; });
-        document.getElementById('downBtn').addEventListener('mouseup', () => { keys['down'] = false; });
-        document.getElementById('downBtn').addEventListener('touchstart', (e) => { e.preventDefault(); keys['down'] = true; });
-        document.getElementById('downBtn').addEventListener('touchend', (e) => { e.preventDefault(); keys['down'] = false; });
+        // Joystick touch handlers
+        canvas.addEventListener('touchstart', (e) => {
+            for (let touch of e.touches) {
+                const rect = canvas.getBoundingClientRect();
+                const x = touch.clientX - rect.left;
+                const y = touch.clientY - rect.top;
 
-        document.getElementById('leftBtn').addEventListener('mousedown', () => { keys['left'] = true; });
-        document.getElementById('leftBtn').addEventListener('mouseup', () => { keys['left'] = false; });
-        document.getElementById('leftBtn').addEventListener('touchstart', (e) => { e.preventDefault(); keys['left'] = true; });
-        document.getElementById('leftBtn').addEventListener('touchend', (e) => { e.preventDefault(); keys['left'] = false; });
+                // Check if touch is in joystick area (left side)
+                const dist = Math.hypot(x - joystickRadius - 30, y - (canvas.height - joystickRadius - 30));
+                if (dist < joystickRadius) {
+                    joystickActive = true;
+                }
 
-        document.getElementById('rightBtn').addEventListener('mousedown', () => { keys['right'] = true; });
-        document.getElementById('rightBtn').addEventListener('mouseup', () => { keys['right'] = false; });
-        document.getElementById('rightBtn').addEventListener('touchstart', (e) => { e.preventDefault(); keys['right'] = true; });
-        document.getElementById('rightBtn').addEventListener('touchend', (e) => { e.preventDefault(); keys['right'] = false; });
+                // Check if touch is in fire button area (right side)
+                const fireX = canvas.width - 100 - 30;
+                const fireY = canvas.height - 100 - 30;
+                const fireDist = Math.hypot(x - fireX - 50, y - fireY - 50);
+                if (fireDist < 50) {
+                    fireActive = true;
+                }
+            }
+        });
 
-        document.getElementById('fireBtn').addEventListener('mousedown', () => { keys['fire'] = true; });
-        document.getElementById('fireBtn').addEventListener('mouseup', () => { keys['fire'] = false; });
-        document.getElementById('fireBtn').addEventListener('touchstart', (e) => { e.preventDefault(); keys['fire'] = true; });
-        document.getElementById('fireBtn').addEventListener('touchend', (e) => { e.preventDefault(); keys['fire'] = false; });
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            for (let touch of e.touches) {
+                const rect = canvas.getBoundingClientRect();
+                const x = touch.clientX - rect.left;
+                const y = touch.clientY - rect.top;
+
+                if (joystickActive) {
+                    const baseX = joystickRadius + 30;
+                    const baseY = canvas.height - joystickRadius - 30;
+                    const dx = x - baseX;
+                    const dy = y - baseY;
+                    const dist = Math.hypot(dx, dy);
+                    const angle = Math.atan2(dy, dx);
+
+                    if (dist > joystickBaseRadius) {
+                        joystickX = Math.cos(angle) * joystickBaseRadius;
+                        joystickY = Math.sin(angle) * joystickBaseRadius;
+                    } else {
+                        joystickX = dx;
+                        joystickY = dy;
+                    }
+                }
+            }
+        });
+
+        canvas.addEventListener('touchend', (e) => {
+            joystickActive = false;
+            fireActive = false;
+            joystickX = 0;
+            joystickY = 0;
+        });
+
+        // Fire button handlers
+        fireButton.addEventListener('mousedown', () => { fireActive = true; });
+        fireButton.addEventListener('mouseup', () => { fireActive = false; });
+        fireButton.addEventListener('touchstart', (e) => { e.preventDefault(); fireActive = true; });
+        fireButton.addEventListener('touchend', (e) => { e.preventDefault(); fireActive = false; });
 
         // Keyboard controls
+        const keys = {};
         document.addEventListener('keydown', (e) => {
             if (e.key === 'ArrowUp' || e.key === 'w') keys['up'] = true;
             if (e.key === 'ArrowDown' || e.key === 's') keys['down'] = true;
             if (e.key === 'ArrowLeft' || e.key === 'a') keys['left'] = true;
             if (e.key === 'ArrowRight' || e.key === 'd') keys['right'] = true;
-            if (e.key === ' ') { e.preventDefault(); keys['fire'] = true; }
+            if (e.key === ' ') { e.preventDefault(); fireActive = true; }
         });
 
         document.addEventListener('keyup', (e) => {
@@ -314,7 +325,7 @@
             if (e.key === 'ArrowDown' || e.key === 's') keys['down'] = false;
             if (e.key === 'ArrowLeft' || e.key === 'a') keys['left'] = false;
             if (e.key === 'ArrowRight' || e.key === 'd') keys['right'] = false;
-            if (e.key === ' ') keys['fire'] = false;
+            if (e.key === ' ') fireActive = false;
         });
 
         function drawShip(x, y, width, height, color) {
@@ -327,12 +338,68 @@
             ctx.fill();
         }
 
+        function drawJoystick() {
+            const baseX = joystickRadius + 30;
+            const baseY = canvas.height - joystickRadius - 30;
+
+            // Base circle
+            ctx.fillStyle = 'rgba(100, 150, 200, 0.3)';
+            ctx.beginPath();
+            ctx.arc(baseX, baseY, joystickBaseRadius, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(200, 220, 255, 0.5)';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Knob
+            ctx.fillStyle = 'rgba(0, 255, 0, 0.8)';
+            ctx.shadowColor = 'rgba(0, 255, 0, 0.6)';
+            ctx.shadowBlur = 10;
+            ctx.beginPath();
+            ctx.arc(baseX + joystickX, baseY + joystickY, 25, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#00ff00';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+        }
+
+        function drawFireButton() {
+            const fireX = canvas.width - 100 - 30;
+            const fireY = canvas.height - 100 - 30;
+
+            // Button circle
+            ctx.fillStyle = fireActive ? 'rgba(255, 68, 68, 0.9)' : 'rgba(255, 100, 100, 0.7)';
+            ctx.shadowColor = 'rgba(255, 0, 0, 0.8)';
+            ctx.shadowBlur = fireActive ? 30 : 15;
+            ctx.beginPath();
+            ctx.arc(fireX + 50, fireY + 50, 45, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Border
+            ctx.strokeStyle = '#ffaa00';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            // Text
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 35px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+            ctx.shadowBlur = 5;
+            ctx.fillText('🔫', fireX + 50, fireY + 50);
+            ctx.shadowBlur = 0;
+        }
+
         function update() {
             if (!gameActive) return;
 
-            // Player movement
-            playerShip.vx = 0;
-            playerShip.vy = 0;
+            // Player movement from joystick
+            playerShip.vx = (joystickX / joystickBaseRadius) * playerShip.speed;
+            playerShip.vy = (joystickY / joystickBaseRadius) * playerShip.speed;
+
+            // Keyboard controls (for testing)
             if (keys['up']) playerShip.vy = -playerShip.speed;
             if (keys['down']) playerShip.vy = playerShip.speed;
             if (keys['left']) playerShip.vx = -playerShip.speed;
@@ -346,7 +413,7 @@
             playerShip.y = Math.max(0, Math.min(playerShip.y, canvas.height - playerShip.height));
 
             // Firing
-            if (keys['fire'] && fireRate === 0) {
+            if (fireActive && fireRate === 0) {
                 bullets.push({
                     x: playerShip.x + playerShip.width / 2,
                     y: playerShip.y,
@@ -471,11 +538,12 @@
         }
 
         function draw() {
-            ctx.fillStyle = 'rgba(13, 61, 92, 0.3)';
+            // Clear canvas
+            ctx.fillStyle = 'rgba(13, 61, 92, 0.2)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             // Draw player ship
-            drawShip(playerShip.x, playerShip.y, playerShip.width, playerShip.height, '#00cc00');
+            drawShip(playerShip.x, playerShip.y, playerShip.width, playerShip.height, '#00ff00');
 
             // Draw bullets
             ctx.fillStyle = '#ffff00';
@@ -492,6 +560,10 @@
                     ctx.fillRect(bullet.x - bullet.width / 2, bullet.y, bullet.width, bullet.height);
                 });
             });
+
+            // Draw joystick and fire button
+            drawJoystick();
+            drawFireButton();
         }
 
         function endGame() {
