@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>9th Grade Gaming - Unblocked Games</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        header h1 {
+            font-size: 3em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .game-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .game-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .game-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3em;
+            color: white;
+        }
+
+        .game-info {
+            padding: 15px;
+        }
+
+        .game-info h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+        }
+
+        .game-info p {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .play-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: opacity 0.3s;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            text-align: center;
+        }
+
+        .play-btn:hover {
+            opacity: 0.8;
+        }
+
+        footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2em;
+            }
+
+            .games-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🎮 9th Grade Gaming</h1>
+        <p>Play awesome unblocked games anytime, anywhere!</p>
+    </header>
+
+    <div class="container">
+        <div class="games-grid">
+            <!-- Game 1: Snake -->
+            <div class="game-card">
+                <div class="game-image">🐍</div>
+                <div class="game-info">
+                    <h3>Snake Game</h3>
+                    <p>Classic snake game - eat food and grow longer while avoiding walls and yourself!</p>
+                    <a href="games/snake.html" class="play-btn">Play Now</a>
+                </div>
+            </div>
+
+            <!-- Game 2: Pong -->
+            <div class="game-card">
+                <div class="game-image">🏓</div>
+                <div class="game-info">
+                    <h3>Pong</h3>
+                    <p>The classic Pong game - move your paddle and keep the ball from getting past you!</p>
+                    <a href="games/pong.html" class="play-btn">Play Now</a>
+                </div>
+            </div>
+
+            <!-- Game 3: Flappy Bird -->
+            <div class="game-card">
+                <div class="game-image">🐦</div>
+                <div class="game-info">
+                    <h3>Flappy Bird</h3>
+                    <p>Help the bird fly through the pipes! One tap to jump, don't hit the pipes!</p>
+                    <a href="games/flappy-bird.html" class="play-btn">Play Now</a>
+                </div>
+            </div>
+
+            <!-- Game 4: Tic Tac Toe -->
+            <div class="game-card">
+                <div class="game-image">⭕</div>
+                <div class="game-info">
+                    <h3>Tic Tac Toe</h3>
+                    <p>The classic game - beat the AI or challenge a friend to get three in a row!</p>
+                    <a href="games/tictactoe.html" class="play-btn">Play Now</a>
+                </div>
+            </div>
+
+            <!-- Game 5: Hangman -->
+            <div class="game-card">
+                <div class="game-image">🎯</div>
+                <div class="game-info">
+                    <h3>Hangman</h3>
+                    <p>Guess the word before running out of tries. Can you beat the computer?</p>
+                    <a href="games/hangman.html" class="play-btn">Play Now</a>
+                </div>
+            </div>
+
+            <!-- Game 6: 2048 -->
+            <div class="game-card">
+                <div class="game-image">🎲</div>
+                <div class="game-info">
+                    <h3>2048</h3>
+                    <p>Slide tiles to combine numbers and reach the 2048 tile. A challenging puzzle game!</p>
+                    <a href="games/2048.html" class="play-btn">Play Now</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 9th Grade Gaming. Have fun and enjoy! 🎮</p>
+    </footer>
+</body>
+</html>
