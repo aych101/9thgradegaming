@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Pirate Naval Battle</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a3a52 0%, #2c5aa0 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .header h1 {
+            font-size: 1.8em;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            color: #ffd700;
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 0.95em;
+        }
+
+        #gameCanvas {
+            display: block;
+            border: 3px solid #ffd700;
+            background: linear-gradient(180deg, #1a5a8a 0%, #0d3d5c 100%);
+            width: 100%;
+            height: auto;
+            max-width: 800px;
+            aspect-ratio: 4 / 3;
+            margin: 0 auto;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .direction-pad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            grid-column: 1;
+        }
+
+        .direction-btn {
+            background: #2c5aa0;
+            color: white;
+            border: 2px solid #ffd700;
+            border-radius: 8px;
+            padding: 15px;
+            font-size: 1.2em;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.1s;
+            active: scale(0.95);
+        }
+
+        .direction-btn:active {
+            transform: scale(0.95);
+            background: #1a3a52;
+        }
+
+        .direction-btn:disabled {
+            opacity: 0.5;
+        }
+
+        .fire-btn {
+            grid-column: 2;
+            grid-row: 1 / 4;
+            background: #ff4444;
+            color: white;
+            border: 3px solid #ffaa00;
+            border-radius: 12px;
+            font-size: 1.4em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.1s;
+        }
+
+        .fire-btn:active {
+            transform: scale(0.95);
+            background: #dd0000;
+        }
+
+        .info {
+            color: white;
+            text-align: center;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+
+        .back-btn {
+            background: #444;
+            color: white;
+            border: 2px solid #666;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 10px;
+            width: 100%;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .back-btn:active {
+            background: #222;
+        }
+
+        .game-over {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            z-index: 1000;
+            display: none;
+            min-width: 250px;
+        }
+
+        .game-over h2 {
+            font-size: 2em;
+            margin-bottom: 10px;
+            color: #ffd700;
+        }
+
+        .game-over p {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
+
+        .game-over button {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.4em;
+            }
+
+            .stats {
+                font-size: 0.85em;
+            }
+
+            .direction-btn {
+                padding: 12px;
+                font-size: 1em;
+            }
+
+            .fire-btn {
+                font-size: 1.2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚓ Pirate Naval Battle</h1>
+            <div class="stats">
+                <div>❤️ Health: <span id="health">100</span></div>
+                <div>💀 Kills: <span id="kills">0</span></div>
+                <div>⭐ Score: <span id="score">0</span></div>
+            </div>
+        </div>
+
+        <canvas id="gameCanvas"></canvas>
+
+        <div class="controls">
+            <div class="direction-pad">
+                <div></div>
+                <button class="direction-btn" id="upBtn">⬆️</button>
+                <div></div>
+                
+                <button class="direction-btn" id="leftBtn">⬅️</button>
+                <button class="direction-btn" id="downBtn">⬇️</button>
+                <button class="direction-btn" id="rightBtn">➡️</button>
+            </div>
+            <button class="fire-btn" id="fireBtn">🔫<br>FIRE</button>
+        </div>
+
+        <div class="info">
+            <p>Destroy enemy ships! Don't let them escape!</p>
+        </div>
+
+        <button class="back-btn" onclick="window.location.href='index.html'">🏠 Back to Hub</button>
+    </div>
+
+    <div class="game-over" id="gameOver">
+        <h2 id="gameOverTitle">Game Over!</h2>
+        <p>Final Score: <span id="finalScore">0</span></p>
+        <p>Kills: <span id="finalKills">0</span></p>
+        <button onclick="location.reload()">Play Again</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Set canvas size
+        function resizeCanvas() {
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = Math.min(800, window.innerWidth - 20);
+            canvas.height = canvas.width * 0.75;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // Game variables
+        let playerShip = {
+            x: canvas.width / 2,
+            y: canvas.height - 50,
+            width: 30,
+            height: 40,
+            vx: 0,
+            vy: 0,
+            speed: 5,
+            health: 100
+        };
+
+        let bullets = [];
+        let enemies = [];
+        let score = 0;
+        let kills = 0;
+        let gameActive = true;
+        let fireRate = 0;
+        let spawnRate = 0;
+
+        const keys = {};
+
+        // Touch controls
+        document.getElementById('upBtn').addEventListener('mousedown', () => { keys['up'] = true; });
+        document.getElementById('upBtn').addEventListener('mouseup', () => { keys['up'] = false; });
+        document.getElementById('upBtn').addEventListener('touchstart', (e) => { e.preventDefault(); keys['up'] = true; });
+        document.getElementById('upBtn').addEventListener('touchend', (e) => { e.preventDefault(); keys['up'] = false; });
+
+        document.getElementById('downBtn').addEventListener('mousedown', () => { keys['down'] = true; });
+        document.getElementById('downBtn').addEventListener('mouseup', () => { keys['down'] = false; });
+        document.getElementById('downBtn').addEventListener('touchstart', (e) => { e.preventDefault(); keys['down'] = true; });
+        document.getElementById('downBtn').addEventListener('touchend', (e) => { e.preventDefault(); keys['down'] = false; });
+
+        document.getElementById('leftBtn').addEventListener('mousedown', () => { keys['left'] = true; });
+        document.getElementById('leftBtn').addEventListener('mouseup', () => { keys['left'] = false; });
+        document.getElementById('leftBtn').addEventListener('touchstart', (e) => { e.preventDefault(); keys['left'] = true; });
+        document.getElementById('leftBtn').addEventListener('touchend', (e) => { e.preventDefault(); keys['left'] = false; });
+
+        document.getElementById('rightBtn').addEventListener('mousedown', () => { keys['right'] = true; });
+        document.getElementById('rightBtn').addEventListener('mouseup', () => { keys['right'] = false; });
+        document.getElementById('rightBtn').addEventListener('touchstart', (e) => { e.preventDefault(); keys['right'] = true; });
+        document.getElementById('rightBtn').addEventListener('touchend', (e) => { e.preventDefault(); keys['right'] = false; });
+
+        document.getElementById('fireBtn').addEventListener('mousedown', () => { keys['fire'] = true; });
+        document.getElementById('fireBtn').addEventListener('mouseup', () => { keys['fire'] = false; });
+        document.getElementById('fireBtn').addEventListener('touchstart', (e) => { e.preventDefault(); keys['fire'] = true; });
+        document.getElementById('fireBtn').addEventListener('touchend', (e) => { e.preventDefault(); keys['fire'] = false; });
+
+        // Keyboard controls
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowUp' || e.key === 'w') keys['up'] = true;
+            if (e.key === 'ArrowDown' || e.key === 's') keys['down'] = true;
+            if (e.key === 'ArrowLeft' || e.key === 'a') keys['left'] = true;
+            if (e.key === 'ArrowRight' || e.key === 'd') keys['right'] = true;
+            if (e.key === ' ') { e.preventDefault(); keys['fire'] = true; }
+        });
+
+        document.addEventListener('keyup', (e) => {
+            if (e.key === 'ArrowUp' || e.key === 'w') keys['up'] = false;
+            if (e.key === 'ArrowDown' || e.key === 's') keys['down'] = false;
+            if (e.key === 'ArrowLeft' || e.key === 'a') keys['left'] = false;
+            if (e.key === 'ArrowRight' || e.key === 'd') keys['right'] = false;
+            if (e.key === ' ') keys['fire'] = false;
+        });
+
+        function drawShip(x, y, width, height, color) {
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.moveTo(x + width / 2, y);
+            ctx.lineTo(x + width, y + height);
+            ctx.lineTo(x, y + height);
+            ctx.closePath();
+            ctx.fill();
+        }
+
+        function update() {
+            if (!gameActive) return;
+
+            // Player movement
+            playerShip.vx = 0;
+            playerShip.vy = 0;
+            if (keys['up']) playerShip.vy = -playerShip.speed;
+            if (keys['down']) playerShip.vy = playerShip.speed;
+            if (keys['left']) playerShip.vx = -playerShip.speed;
+            if (keys['right']) playerShip.vx = playerShip.speed;
+
+            playerShip.x += playerShip.vx;
+            playerShip.y += playerShip.vy;
+
+            // Boundaries
+            playerShip.x = Math.max(0, Math.min(playerShip.x, canvas.width - playerShip.width));
+            playerShip.y = Math.max(0, Math.min(playerShip.y, canvas.height - playerShip.height));
+
+            // Firing
+            if (keys['fire'] && fireRate === 0) {
+                bullets.push({
+                    x: playerShip.x + playerShip.width / 2,
+                    y: playerShip.y,
+                    vx: 0,
+                    vy: -8,
+                    width: 4,
+                    height: 10
+                });
+                fireRate = 5;
+            }
+            if (fireRate > 0) fireRate--;
+
+            // Update bullets
+            for (let i = bullets.length - 1; i >= 0; i--) {
+                bullets[i].x += bullets[i].vx;
+                bullets[i].y += bullets[i].vy;
+                if (bullets[i].y < 0) {
+                    bullets.splice(i, 1);
+                }
+            }
+
+            // Spawn enemies
+            spawnRate++;
+            if (spawnRate > Math.max(30, 100 - kills * 2)) {
+                enemies.push({
+                    x: Math.random() * (canvas.width - 30),
+                    y: -40,
+                    width: 30,
+                    height: 40,
+                    vx: (Math.random() - 0.5) * 2,
+                    vy: 2 + kills * 0.1,
+                    health: 1,
+                    bullets: []
+                });
+                spawnRate = 0;
+            }
+
+            // Update enemies
+            for (let i = enemies.length - 1; i >= 0; i--) {
+                enemies[i].x += enemies[i].vx;
+                enemies[i].y += enemies[i].vy;
+
+                // Enemy shooting
+                if (Math.random() < 0.02) {
+                    enemies[i].bullets.push({
+                        x: enemies[i].x + enemies[i].width / 2,
+                        y: enemies[i].y + enemies[i].height,
+                        vx: 0,
+                        vy: 5,
+                        width: 4,
+                        height: 10
+                    });
+                }
+
+                // Update enemy bullets
+                for (let j = enemies[i].bullets.length - 1; j >= 0; j--) {
+                    enemies[i].bullets[j].y += enemies[i].bullets[j].vy;
+                    if (enemies[i].bullets[j].y > canvas.height) {
+                        enemies[i].bullets.splice(j, 1);
+                    }
+                }
+
+                // Collision with player bullets
+                for (let j = bullets.length - 1; j >= 0; j--) {
+                    if (bullets[j].x < enemies[i].x + enemies[i].width &&
+                        bullets[j].x + bullets[j].width > enemies[i].x &&
+                        bullets[j].y < enemies[i].y + enemies[i].height &&
+                        bullets[j].y + bullets[j].height > enemies[i].y) {
+                        enemies[i].health--;
+                        score += 5;
+                        bullets.splice(j, 1);
+                        if (enemies[i].health <= 0) {
+                            enemies.splice(i, 1);
+                            kills++;
+                            score += 50;
+                            i--;
+                        }
+                        break;
+                    }
+                }
+
+                // Collision with player
+                if (enemies[i] && enemies[i].x < playerShip.x + playerShip.width &&
+                    enemies[i].x + enemies[i].width > playerShip.x &&
+                    enemies[i].y < playerShip.y + playerShip.height &&
+                    enemies[i].y + enemies[i].height > playerShip.y) {
+                    playerShip.health -= 5;
+                    enemies.splice(i, 1);
+                    i--;
+                }
+
+                // Enemy escaped
+                if (enemies[i] && enemies[i].y > canvas.height) {
+                    playerShip.health -= 10;
+                    enemies.splice(i, 1);
+                    i--;
+                }
+
+                // Enemy bullet collision
+                if (enemies[i]) {
+                    for (let j = enemies[i].bullets.length - 1; j >= 0; j--) {
+                        if (enemies[i].bullets[j].x < playerShip.x + playerShip.width &&
+                            enemies[i].bullets[j].x + enemies[i].bullets[j].width > playerShip.x &&
+                            enemies[i].bullets[j].y < playerShip.y + playerShip.height &&
+                            enemies[i].bullets[j].y + enemies[i].bullets[j].height > playerShip.y) {
+                            playerShip.health -= 5;
+                            enemies[i].bullets.splice(j, 1);
+                        }
+                    }
+                }
+            }
+
+            if (playerShip.health <= 0) {
+                gameActive = false;
+                endGame();
+            }
+
+            // Update UI
+            document.getElementById('health').textContent = Math.max(0, playerShip.health);
+            document.getElementById('kills').textContent = kills;
+            document.getElementById('score').textContent = score;
+        }
+
+        function draw() {
+            ctx.fillStyle = 'rgba(13, 61, 92, 0.3)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw player ship
+            drawShip(playerShip.x, playerShip.y, playerShip.width, playerShip.height, '#00cc00');
+
+            // Draw bullets
+            ctx.fillStyle = '#ffff00';
+            bullets.forEach(bullet => {
+                ctx.fillRect(bullet.x - bullet.width / 2, bullet.y, bullet.width, bullet.height);
+            });
+
+            // Draw enemies
+            enemies.forEach(enemy => {
+                drawShip(enemy.x, enemy.y, enemy.width, enemy.height, '#dd0000');
+
+                ctx.fillStyle = '#ff8844';
+                enemy.bullets.forEach(bullet => {
+                    ctx.fillRect(bullet.x - bullet.width / 2, bullet.y, bullet.width, bullet.height);
+                });
+            });
+        }
+
+        function endGame() {
+            document.getElementById('finalScore').textContent = score;
+            document.getElementById('finalKills').textContent = kills;
+            document.getElementById('gameOver').style.display = 'block';
+        }
+
+        function gameLoop() {
+            update();
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+
+        gameLoop();
+    </script>
+</body>
+</html>
