@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pong - 9th Grade Gaming</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        h1 {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .score {
+            color: white;
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        #gameBoard {
+            border: 3px solid white;
+            background: #000;
+            margin: 20px auto;
+            display: block;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .controls {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 1em;
+        }
+
+        button {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1em;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            margin-top: 20px;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .message {
+            color: white;
+            font-size: 1.2em;
+            font-weight: bold;
+            min-height: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏓 Pong</h1>
+        <div class="score">You: <span id="playerScore">0</span> - AI: <span id="aiScore">0</span></div>
+        <canvas id="gameBoard" width="800" height="400"></canvas>
+        <div class="message" id="message"></div>
+        <div class="controls">
+            <p>Use W and S keys to move your paddle (right side)</p>
+            <p>First to 5 points wins!</p>
+        </div>
+        <button onclick="resetGame()">New Game</button>
+        <button class="back-btn" onclick="window.location.href='../index.html'">Back to Hub</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameBoard');
+        const ctx = canvas.getContext('2d');
+
+        const paddleHeight = 100;
+        const paddleWidth = 15;
+        const ballSize = 8;
+        const speed = 5;
+
+        let playerPaddle = {
+            x: canvas.width - 30,
+            y: canvas.height / 2 - paddleHeight / 2,
+            width: paddleWidth,
+            height: paddleHeight,
+            dy: 0
+        };
+
+        let aiPaddle = {
+            x: 15,
+            y: canvas.height / 2 - paddleHeight / 2,
+            width: paddleWidth,
+            height: paddleHeight,
+            speed: 3
+        };
+
+        let ball = {
+            x: canvas.width / 2,
+            y: canvas.height / 2,
+            dx: 5,
+            dy: 5,
+            size: ballSize
+        };
+
+        let playerScore = 0;
+        let aiScore = 0;
+        let gameActive = true;
+        const winScore = 5;
+
+        const keys = {};
+
+        document.addEventListener('keydown', (e) => {
+            keys[e.key.toLowerCase()] = true;
+        });
+
+        document.addEventListener('keyup', (e) => {
+            keys[e.key.toLowerCase()] = false;
+        });
+
+        function drawRect(x, y, width, height, color) {
+            ctx.fillStyle = color;
+            ctx.fillRect(x, y, width, height);
+        }
+
+        function drawBall() {
+            ctx.fillStyle = '#00FF00';
+            ctx.beginPath();
+            ctx.arc(ball.x, ball.y, ball.size, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        function drawGame() {
+            drawRect(0, 0, canvas.width, canvas.height, '#000');
+            
+            // Center line
+            ctx.strokeStyle = '#FFF';
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath();
+            ctx.moveTo(canvas.width / 2, 0);
+            ctx.lineTo(canvas.width / 2, canvas.height);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            drawRect(aiPaddle.x, aiPaddle.y, aiPaddle.width, aiPaddle.height, '#FF0000');
+            drawRect(playerPaddle.x, playerPaddle.y, playerPaddle.width, playerPaddle.height, '#00FF00');
+            drawBall();
+        }
+
+        function update() {
+            if (!gameActive) return;
+
+            // Player paddle movement
+            if (keys['w'] && playerPaddle.y > 0) {
+                playerPaddle.y -= 6;
+            }
+            if (keys['s'] && playerPaddle.y < canvas.height - playerPaddle.height) {
+                playerPaddle.y += 6;
+            }
+
+            // AI paddle movement
+            const aiCenter = aiPaddle.y + aiPaddle.height / 2;
+            if (aiCenter < ball.y - 35) {
+                aiPaddle.y += aiPaddle.speed;
+            } else if (aiCenter > ball.y + 35) {
+                aiPaddle.y -= aiPaddle.speed;
+            }
+
+            aiPaddle.y = Math.max(0, Math.min(aiPaddle.y, canvas.height - aiPaddle.height));
+
+            // Ball movement
+            ball.x += ball.dx;
+            ball.y += ball.dy;
+
+            // Ball collision with top and bottom
+            if (ball.y - ball.size < 0 || ball.y + ball.size > canvas.height) {
+                ball.dy *= -1;
+            }
+
+            // Ball collision with paddles
+            if (ball.x - ball.size < aiPaddle.x + aiPaddle.width &&
+                ball.y > aiPaddle.y &&
+                ball.y < aiPaddle.y + aiPaddle.height) {
+                ball.dx *= -1;
+                ball.x = aiPaddle.x + aiPaddle.width + ball.size;
+            }
+
+            if (ball.x + ball.size > playerPaddle.x &&
+                ball.y > playerPaddle.y &&
+                ball.y < playerPaddle.y + playerPaddle.height) {
+                ball.dx *= -1;
+                ball.x = playerPaddle.x - ball.size;
+            }
+
+            // Ball out of bounds
+            if (ball.x - ball.size < 0) {
+                aiScore++;
+                resetBall();
+                document.getElementById('aiScore').textContent = aiScore;
+            } else if (ball.x + ball.size > canvas.width) {
+                playerScore++;
+                resetBall();
+                document.getElementById('playerScore').textContent = playerScore;
+            }
+
+            if (playerScore >= winScore || aiScore >= winScore) {
+                gameActive = false;
+                document.getElementById('message').textContent = 
+                    playerScore >= winScore ? '🎉 You Win!' : '😢 AI Wins!';
+            }
+
+            drawGame();
+        }
+
+        function resetBall() {
+            ball.x = canvas.width / 2;
+            ball.y = canvas.height / 2;
+            ball.dx = (Math.random() > 0.5 ? 1 : -1) * 5;
+            ball.dy = (Math.random() * 4 - 2);
+        }
+
+        function resetGame() {
+            playerScore = 0;
+            aiScore = 0;
+            gameActive = true;
+            document.getElementById('playerScore').textContent = playerScore;
+            document.getElementById('aiScore').textContent = aiScore;
+            document.getElementById('message').textContent = '';
+            resetBall();
+            drawGame();
+        }
+
+        setInterval(update, 30);
+        resetGame();
+    </script>
+</body>
+</html>
